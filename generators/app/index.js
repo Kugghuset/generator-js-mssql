@@ -7,6 +7,7 @@ var utils = require('../utils');
 var chalk = require('chalk');
 var shell = require('shelljs');
 var fs = require('fs');
+var path = require('path');
 
 module.exports = generators.Base.extend({
   constructor: function () {
@@ -44,11 +45,32 @@ module.exports = generators.Base.extend({
       this.destinationPath(),
       this.answers
       );
-    // Copy over .gitignore file
-    this.fs.copy(
-      this.templatePath('.gitignore'),
-      this.destinationPath('.gitignore')
-      )
+
+    var hiddenFiles = fs.readdirSync(this.templatePath());
+
+    _.forEach(hiddenFiles, function (filename) {
+      // Get the statObj for checking if it's a file
+      var statObj = fs.statSync(this.templatePath(filename));
+
+      // Return early if it's not a file
+      if (!statObj.isFile()) { return; }
+
+      // Copy over hidden files
+      this.fs.copy(
+        this.templatePath(filename),
+        this.destinationPath(filename)
+      );
+
+      // Create an .env file as well
+      // Cannot be added to repo as it's gitignored
+      if (filename === '.env.example') {
+        this.fs.copy(
+          this.templatePath(filename),
+          this.destinationPath('.env')
+        );
+      }
+    }.bind(this));
+
   },
 
   install: function () {
