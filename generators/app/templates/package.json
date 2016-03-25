@@ -1,0 +1,26 @@
+{
+  "name": "exampl-ename",
+  "version": "0.0.1",
+  "description": "description",
+  "main": "server.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "serve": "node server.js",
+    "build:server": "babel server --out-dir .server --copy-files",
+    "build:frontend": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git.url"
+  },
+  "keywords": [],
+  "author": "John Doe",
+  "license": "ISC",
+  "bugs": {
+    "url": "git/issues"
+  },
+  "homepage": "git"
+}

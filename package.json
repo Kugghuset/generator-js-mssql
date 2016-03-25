@@ -1,0 +1,35 @@
+{
+  "name": "generator-js-mssql",
+  "version": "0.0.1",
+  "description": "A generator for scaffolding ES2015 and MSSQL web applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kugghuset/generator-js-mssql.git"
+  },
+  "keywords": [
+    "kugghuset",
+    "mssql",
+    "es2015",
+    "yo",
+    "generator",
+    "yeoman-generator"
+  ],
+  "author": "Kristoffer Östlund",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kugghuset/generator-js-mssql/issues"
+  },
+  "homepage": "https://github.com/Kugghuset/generator-js-mssql#readme",
+  "dependencies": {
+    "bluebird": "^3.3.4",
+    "chalk": "^1.1.1",
+    "lodash": "^4.6.1",
+    "normalize-git-url": "^3.0.1",
+    "shelljs": "^0.6.0",
+    "yeoman-generator": "^0.22.5"
+  }
+}
