@@ -94,8 +94,8 @@ module.exports = generators.Base.extend({
   install: function () {
     this.log('\nPlease wait while we\'re installin the dependencies.\nThis might take a while, so go grab a beer or coffee in the mean time!\n');
 
-    // this.npmInstall(deps.prod, { 'save': true });
-    // this.npmInstall(deps.dev, { 'saveDev': true });
+    this.npmInstall(deps.prod, { 'save': true });
+    this.npmInstall(deps.dev, { 'saveDev': true });
   },
 
   end: function () {
