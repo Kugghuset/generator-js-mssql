@@ -4,6 +4,9 @@ import User from './user.db';
 import config from '../../config';
 import utils from '../../utils/utils';
 
+// Initialize the user table
+User.initialize();
+
 /**
  * Route: GET '/api/users/'
  */
@@ -12,7 +15,7 @@ export const index = (req, res) => {
   let {top, page} = req.query;
 
   User.find(top, page)
-  .then(res.status(200).json)
+  .then((users) => res.status(200).json(users))
   .catch((err) => utils.handleError(res, err));
 }
 
@@ -24,7 +27,7 @@ export const show = (req, res) => {
   let {_id} = req.params;
 
   User.findById(_id)
-  .then(res.status(200).json)
+  .then((user) => res.status(200).json(user))
   .catch((err) => utils.handleError(res, err));
 }
 
@@ -36,7 +39,7 @@ export const create = (req, res) => {
   let _user = req.body;
 
   User.create(_user)
-  .then(res.status(200).json)
+  .then((user) => res.status(200).json(user))
   .catch((err) => utils.handleError(res, err));
 }
 
@@ -49,7 +52,7 @@ export const update = (req, res) => {
   let _user = req.body;
 
   User.update(_id, _user)
-  .then(res.status(200).json)
+  .then((user) => res.status(200).json(user))
   .catch((err) => utils.handleError(res, err));
 }
 

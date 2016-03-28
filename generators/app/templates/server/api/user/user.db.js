@@ -127,15 +127,16 @@ export const create = (user) => new Promise((resolve, reject) => {
   if (!user.password) { return reject(new Error('Cannot create user. No password provided')); }
   if (!user.email) { return reject(new Error('Cannot create user. No email provided')); }
 
+  // Encrypt the password
   let _password = auth.encryptPassword(user.password);
 
   let _params = getParams(_.assign({}, user, { password: _password }));
 
   sql.execute({
-    query: sql.fromFile('./sql/user.create'),
+    query: sql.fromFile('./sql/user.create.sql'),
     params: _params,
   })
-  .then((users) => utils.objectify(users[0]))
+  .then((users) => resolve(utils.objectify(users[0])))
   .catch(reject)
 });
 

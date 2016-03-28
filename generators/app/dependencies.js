@@ -19,6 +19,9 @@ module.exports = {
     'moment',
     'node-env-file',
     'jquery',
+    'dataobject-parser',
+    'winston',
+    'morgan',
   ],
   dev: [
     'babel-core',

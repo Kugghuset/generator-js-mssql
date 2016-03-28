@@ -111,6 +111,40 @@ export const _put = (url, data, options = {}, assumeJson = true) => _request('pu
  */
 export const _post = (url, data, options = {}, assumeJson = true) => _request('post', data, options, assumeJson);
 
+/**
+ * Makes a DELETE request to the provided *url*
+ * and returns a promise of the response body.
+ *
+ * If data is an object, it will be converted into query params
+ * and be appended to *url*.
+ *
+ * @param {String} url Url to make the DELETE requests to
+ * @param {Object|String} data Will be used as query params if defined.
+ * @param {Object} options Defaults to {}, options object to use in the GET request
+ * @param {Boolean} assumeJson Defaults to true
+ * @return {Promise} -> {Any}
+ */
+export const _delete = (url, data, options = {}, assumeJson = true) => {
+  let _params;
+  let _url = url;
+
+  // Handle data
+  if (_.isString(data)) {
+    // data is a string and is assumed to be url encoded
+    _params = data;
+  } else if (_.isObject(data)) {
+    // Data is an object which sould be converted into query params
+    _params = _.map(data, (value, key) => encodeURI([key, value].join('='))).join('&');
+  }
+
+  // Append *_params* if defined
+  if (!_.isUndefined(_params)) {
+    // Join either by ? or & depending on whether there already is a ? in the url
+    _url += (/\?/.test(url) ? '&' : '?') + _params;
+  }
+
+  return _request('delete', _url, undefined, options, assumeJson);
+}
 export default {
   get: _get,
   post: _post,

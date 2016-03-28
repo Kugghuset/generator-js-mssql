@@ -2,10 +2,13 @@
 
 import winston from 'winston';
 
+/**
+ * Logger object, used for logging things to the stream.
+ */
 const logger = new winston.Logger({
   transports: [
     new winston.transports.Console({
-      level: debug,
+      level: 'debug',
       json: false,
       colorize: true,
       timestamp: true,
@@ -13,5 +16,18 @@ const logger = new winston.Logger({
   ],
   exitOnError: true
 });
+
+/**
+ * Stream object
+ */
+const stream = {
+  /**
+   * @param {String} message Message to write to stream
+   */
+  write: logger.info
+};
+
+// Attach the stream to logger.
+logger.stream = stream;
 
 export default logger;
