@@ -1,6 +1,7 @@
 'use strict'
 
 var path = require('path');
+var webpack = require('webpack');
 var LiveReload = require('webpack-livereload-plugin');
 
 module.exports = {
@@ -27,11 +28,20 @@ module.exports = {
       {
         test: /\.scss$/,
         loaders: ['style', 'css', 'sass']
+      },
+      {
+        test: /\.css$/,
+        loaders: ['style', 'css']
       }
     ]
   },
   plugins: [
-    new LiveReload({ appendScriptTag: true })
+    new LiveReload({ appendScriptTag: true }),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+    }),
   ],
   resolve: {
     extensions: ['', '.js']

@@ -13,7 +13,7 @@ var chalk = require('chalk');
  * @param {String} gitUrl
  * @return {Object} { url: {String}, branch: {String}, rawUrl: {String} }
  */
-exports.normalizeGit = function (rawUrl) {
+function normalizeGit(rawUrl) {
   if (!rawUrl || typeof rawUrl !== 'string') {
     // Return the an empty object as an ngu like.
     return { url: '', branch: '', rawUrl: rawUrl };
@@ -36,7 +36,7 @@ exports.normalizeGit = function (rawUrl) {
  * @param {String} input
  * @return {String}
  */
-exports.pascalCase = function (input) {
+function pascalCase(input) {
   return _.map(input.split(/[^a-öA-Ö0-9]/), function (subStr) {
     return subStr[0].toUpperCase() + subStr.slice(1);
   }).join('');
@@ -48,8 +48,8 @@ exports.pascalCase = function (input) {
  * @param {String} input
  * @return {String}
  */
-exports.camelCase = function (input) {
-  var pascal = exports.pascalCase(input);
+function camelCase(input) {
+  var pascal = pascalCase(input);
   return pascal[0].toLowerCase() + pascal.slice(1);
 }
 
@@ -61,7 +61,7 @@ exports.camelCase = function (input) {
  * @param {String} text
  * @return {String}
  */
-exports.escapeRegex = function escapeRegex(text) {
+function escapeRegex(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s\/]/g, "\\$&");
 };
 
@@ -73,8 +73,8 @@ exports.escapeRegex = function escapeRegex(text) {
  * @param {String} flags - optional
  * @return {Object} - RegExp object
  */
-exports.literalRegExp = function literalRegExp(text, flags) {
-  return new RegExp(exports.escapeRegex(text), flags);
+function literalRegExp(text, flags) {
+  return new RegExp(escapeRegex(text), flags);
 }
 
 /**
@@ -86,7 +86,7 @@ exports.literalRegExp = function literalRegExp(text, flags) {
  * @param {String} content - text to inject
  * @param {String} destination - filepath, defaults to yo.destinationPath('server/api/routes.js')
  */
-exports.injectText = function (yo, content, destination) {
+function injectText(yo, content, destination) {
   var fileContents;
 
   destination = destination
@@ -113,11 +113,20 @@ exports.injectText = function (yo, content, destination) {
   // '$1' is the injection start, '$2' is all content after between injection start and stop
   var replace = ['$1$2', content, '\n  '].join('');
 
-  if (exports.literalRegExp(content, 'g').test(fileContents)) {
+  if (literalRegExp(content, 'g').test(fileContents)) {
     // It's already there, no need to do anything.
     return;
   }
 
   // Update the file.
   fs.writeFileSync(destination, fileContents.replace(regex, replace));
+}
+
+module.exports = {
+  normalizeGit: normalizeGit,
+  pascalCase: pascalCase,
+  camelCase: camelCase,
+  escapeRegex: escapeRegex,
+  literalRegExp: literalRegExp,
+  injectText: injectText,
 }

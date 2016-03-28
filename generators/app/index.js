@@ -3,11 +3,14 @@
 var generators = require('yeoman-generator');
 var Promise = require('bluebird');
 var _ = require('lodash');
-var utils = require('../utils');
 var chalk = require('chalk');
 var shell = require('shelljs');
 var fs = require('fs');
 var path = require('path');
+
+var utils = require('../utils');
+var deps = require('./dependencies');
+var prompt = require('./prompt');
 
 module.exports = generators.Base.extend({
   constructor: function () {
@@ -15,20 +18,32 @@ module.exports = generators.Base.extend({
     generators.Base.apply(this, arguments);
 
     // Any options must be declared here
+    this.answers = _.extend({}, this.answers, {
+      name: !!arguments[0] ? arguments[0][0] : this.appname,
+      version: '0.0.0',
+      description: ''
+    });
   },
 
   initializing: function () {
-    this.log('Initializing...')
+    this.log('Initializing...');
   },
 
   prompting: function () {
-    // Ask the developer questions here
+    // This function will await user input,
+    // and must therefor be async.
+    var done = this.async();
 
-   var done = this.async();
-
-   // Do something
-
-   done();
+    // Prompt the user and assign the answers to this.answers
+    prompt(this)
+    .then(function (_answers) {
+      this.answers = _.assign({}, this.answers, _answers);
+      // Call the done callback
+      done();
+    }.bind(this))
+    .catch(function (err) {
+      console.log(err);
+    });
   },
 
   configuring: function () {
@@ -40,20 +55,23 @@ module.exports = generators.Base.extend({
   writing: function () {
     this.log('Copying file, please wait.')
 
+    console.log(this.answers);
+
     this.fs.copyTpl(
       this.templatePath(),
       this.destinationPath(),
       this.answers
-      );
+    );
 
-    var hiddenFiles = fs.readdirSync(this.templatePath());
-
-    _.forEach(hiddenFiles, function (filename) {
+    // Iterate over all hidden files
+    // as fs.copy won't copy hidden files.
+    var _hiddenFiles = fs.readdirSync(this.templatePath());
+    _.forEach(_hiddenFiles, function (filename) {
       // Get the statObj for checking if it's a file
       var statObj = fs.statSync(this.templatePath(filename));
 
-      // Return early if it's not a file
-      if (!statObj.isFile()) { return; }
+      // Return early if it's not a hidden file
+      if (!statObj.isFile() || !/^\./.test(filename)) { return; }
 
       // Copy over hidden files
       this.fs.copy(
@@ -74,15 +92,30 @@ module.exports = generators.Base.extend({
   },
 
   install: function () {
-    // TODO: Move these into separate file
-    var dependencies = ['lodash', 'bluebird', 'body-parser', 'chalk', 'composable-middleware', 'express', 'jsonwebtoken', 'bcryptjs', 'moment', 'node-env-file'];
-    var devDependencies = ['babel-core', 'babel-loader', 'babel-preset-es2015', 'css-loader', 'gulp', 'gulp-livereload', 'node-sass', 'raw-loader', 'sass-loader', 'shelljs', 'style-loader', 'webpack', 'webpack-livereload-plugin'];
+    this.log('\nPlease wait while we\'re installin the dependencies.\nThis might take a while, so go grab a beer or coffee in the mean time!\n');
 
-    this.npmInstall(dependencies, { 'save': true });
-    this.npmInstall(devDependencies, { 'saveDev': true });
+    // this.npmInstall(deps.prod, { 'save': true });
+    // this.npmInstall(deps.dev, { 'saveDev': true });
   },
 
   end: function () {
-    this.log('Project is all set up!');
+    var missingGlobals = _.filter(deps.global, function (dep) {
+      // Use either the command (if object) or the literal dep (if string)
+      return !shell.which(dep.command || dep);
+    });
+
+    // If there are any missing globals, notify the user of them
+    if (_.some(missingGlobals)) {
+      this.log([
+        '\nBefore the project is completely finished you seem to be missing a couple of CLI tools, you must first to run:\n',
+        '\nnpm install -g ',
+        _.map(missingGlobals, function (dep) { return dep.name || dep; }).join(' '),
+        '\n\nThen it\'s just to build something awesome!'
+      ].join(''));
+
+      shell.exit(1);
+    } else {
+      this.log('Now it\'s just to build something awesome!');
+    }
   }
 });

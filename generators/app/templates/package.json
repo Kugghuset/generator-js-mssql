@@ -1,7 +1,7 @@
 {
-  "name": "exampl-ename",
+  "name": "<%= name %>",
   "version": "0.0.1",
-  "description": "description",
+  "description": "<%= description %>",
   "main": "server.js",
   "dependencies": {
   },
@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git.url"
+    "url": "<%= git.url %>"
   },
   "keywords": [],
-  "author": "John Doe",
-  "license": "ISC",
+  "author": "<%= author %>",
+  "license": "<%= license %>",
   "bugs": {
-    "url": "git/issues"
+    "url": "<%= git.url %>/issues"
   },
   "homepage": "git"
 }
