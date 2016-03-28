@@ -9,6 +9,7 @@ module.exports = {
   prod: [
     'lodash',
     'bluebird',
+    'seriate',
     'body-parser',
     'chalk',
     'composable-middleware',
