@@ -29,9 +29,13 @@ function promptAppName(_this) {
       type: 'input',
       name: 'name',
       message: 'What\'s the projet name?',
+      description: 'The name will be converted into snake-case if not already in that format',
       // Defaults to current folder name
-      default: _this.answers.name || _this.appname,
+      default: _this.answers.name || _.snakeCase(_this.appname),
     }, function (answers) {
+      // Name must be snake case
+      if (answers.name) { answers.name = _.snakeCase(answers.name); }
+
       // Resolve _this extended with *answers*
       resolve(assignAnswers(_this, answers));
     });
