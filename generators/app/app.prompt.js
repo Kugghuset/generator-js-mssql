@@ -5,19 +5,6 @@ var Promise = require('bluebird');
 var utils = require('../utils');
 
 /**
- * Assigns the answers of _this to themselves plus whatever is in _answers
- * and returns _this.
- *
- * NOTE: This will mutate _this, as its prototypes must be usable.
- *
- * @param {Object} _this The yo object which often is used as this.[something]
- * @return {Object}
- */
-function assignAnswers(_this, _answers) {
-  return _.assign(_this, { answers: _.assign({}, _this.answers, _answers) });
-}
-
-/**
  * Returns a promise of _this where _this.answers also has a name attribute.
  *
  * @param {Object} _this The yo object which often is used as this.[something]
@@ -37,7 +24,7 @@ function promptAppName(_this) {
       if (answers.name) { answers.name = _.snakeCase(answers.name); }
 
       // Resolve _this extended with *answers*
-      resolve(assignAnswers(_this, answers));
+      resolve(utils.assignDeep(_this, 'answers', answers));
     });
   });
 }
@@ -58,7 +45,7 @@ function promptAuthor(_this) {
       default: _this.answers.author || 'Arthur Dent',
     }, function (answers) {
       // Resolve _this extended with *answers*
-      resolve(assignAnswers(_this, answers));
+      resolve(utils.assignDeep(_this, 'answers', answers));
     });
   });
 }
@@ -79,7 +66,7 @@ function promptDescription(_this) {
       default: _this.answers.description || 'A project using es2015 and mssql.',
     }, function (answers) {
       // Resolve _this extended with *answers*
-      resolve(assignAnswers(_this, answers));
+      resolve(utils.assignDeep(_this, 'answers', answers));
     });
   });
 }
@@ -100,7 +87,7 @@ function promptGitUrl(_this) {
     }, function (answers) {
       if (answers.git) { answers.git = utils.normalizeGit(answers.git); }
 
-      resolve(assignAnswers(_this, answers));
+      resolve(utils.assignDeep(_this, 'answers', answers));
     });
   });
 };
@@ -116,12 +103,12 @@ function promptLicense(_this) {
     _this.prompt({
       type: 'input',
       name: 'license',
-      message: 'What\'s the projet about?',
+      message: 'What license is the project under?',
       // Defaults to current folder name
       default: _this.answers.license || 'ISC',
     }, function (answers) {
       // Resolve _this extended with *answers*
-      resolve(assignAnswers(_this, answers));
+      resolve(utils.assignDeep(_this, 'answers', answers));
     });
   });
 }

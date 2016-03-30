@@ -10,7 +10,7 @@ var path = require('path');
 
 var utils = require('../utils');
 var deps = require('./dependencies');
-var prompt = require('./prompt');
+var prompt = require('./app.prompt');
 
 module.exports = generators.Base.extend({
   constructor: function () {
@@ -74,17 +74,19 @@ module.exports = generators.Base.extend({
       if (!statObj.isFile() || !/^\./.test(filename)) { return; }
 
       // Copy over hidden files
-      this.fs.copy(
+      this.fs.copyTpl(
         this.templatePath(filename),
-        this.destinationPath(filename)
+        this.destinationPath(filename),
+        this.answers,
       );
 
       // Create an .env file as well
       // Cannot be added to repo as it's gitignored
       if (filename === '.env.example') {
-        this.fs.copy(
+        this.fs.copyTpl(
           this.templatePath(filename),
-          this.destinationPath('.env')
+          this.destinationPath('.env'),
+          this.answers,
         );
       }
     }.bind(this));
