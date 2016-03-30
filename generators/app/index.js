@@ -31,7 +31,7 @@ module.exports = generators.Base.extend({
 
   prompting: function () {
     // This function will await user input,
-    // and must therefor be async.
+    // and must therefore be async.
     var done = this.async();
 
     // Prompt the user and assign the answers to this.answers
@@ -54,8 +54,6 @@ module.exports = generators.Base.extend({
 
   writing: function () {
     this.log('Copying file, please wait.')
-
-    console.log(this.answers);
 
     this.fs.copyTpl(
       this.templatePath(),
@@ -112,12 +110,12 @@ module.exports = generators.Base.extend({
         '\nBefore the project is completely finished you seem to be missing a couple of CLI tools, you must first to run:\n',
         '\nnpm install -g ',
         _.map(missingGlobals, function (dep) { return dep.name || dep; }).join(' '),
-        '\n\nThen it\'s just to build something awesome!'
+        '\n\nThen it\'s just to run ' + chalk.inverse('git init') + ' and then build something awesome!'
       ].join(''));
 
       shell.exit(1);
     } else {
-      this.log('Now it\'s just to build something awesome!');
+      this.log('Now it\'s just to run ' + chalk.inverse('git init') + ' and then build something awesome!');
     }
   }
 });
