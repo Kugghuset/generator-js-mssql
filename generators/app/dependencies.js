@@ -22,6 +22,8 @@ module.exports = {
     'dataobject-parser',
     'winston',
     'morgan',
+    'normalize.css',
+    'milligram',
   ],
   dev: [
     'babel-core',
@@ -37,7 +39,5 @@ module.exports = {
     'style-loader',
     'webpack',
     'webpack-livereload-plugin',
-    'normalize.css',
-    'milligram',
   ]
 }

@@ -20,13 +20,13 @@ export const index = (req, res) => {
 }
 
 /**
- * Route: GET '/api/<%= name %>s/:_id'
+ * Route: GET '/api/<%= name %>s/:id'
  */
 export const show = (req, res) => {
-  // Get the _id
-  let {_id} = req.params;
+  // Get the id
+  let {id} = req.params;
 
-  <%= nameCapitalized %>.findById(_id)
+  <%= nameCapitalized %>.findById(id)
   .then((<%= name %>) => res.status(200).json(<%= name %>))
   .catch((err) => utils.handleError(res, err));
 }
@@ -44,26 +44,26 @@ export const create = (req, res) => {
 }
 
 /**
- * Route: PUT '/api/<%= name %>s/:_id'
+ * Route: PUT '/api/<%= name %>s/:id'
  */
 export const update = (req, res) => {
-  // Get the _id and <%= name %>
-  let {_id} = req.params;
+  // Get the id and <%= name %>
+  let {id} = req.params;
   let _<%= name %> = req.body;
 
-  <%= nameCapitalized %>.update(_id, _<%= name %>)
+  <%= nameCapitalized %>.update(id, _<%= name %>)
   .then((<%= name %>) => res.status(200).json(<%= name %>))
   .catch((err) => utils.handleError(res, err));
 }
 
 /**
- * Route: DELETE '/api/<%= name %>s/:_id'
+ * Route: DELETE '/api/<%= name %>s/:id'
  */
 export const remove = (req, res) => {
-  // Get the _id
-  let {_id} = req.params;
+  // Get the id
+  let {id} = req.params;
 
-  <%= nameCapitalized %>.remove(_id)
+  <%= nameCapitalized %>.remove(id)
   .then(() => res.status(201).send('No Content'))
   .catch((err) => utils.handleError(res, err));
 }

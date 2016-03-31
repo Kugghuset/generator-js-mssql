@@ -2,14 +2,14 @@
 
 import express from 'express';
 import controller from './user.controller';
-import auth from '../../services/auth';
+import auth from '../../services/auth/auth.service';
 
 const router = express.Router();
 
 router.get('/', auth.isAuthenticated(), controller.index);
-router.get('/:_id', auth.isAuthenticated(), controller.show);
+router.get('/:id', auth.isAuthenticated(), controller.show);
 router.post('/', controller.create);
-router.put('/:_id', auth.isAuthenticated(), controller.update);
-router.delete('/:_id', auth.isAuthenticated(), controller.remove);
+router.put('/:id', auth.isAuthenticated(), controller.update);
+router.delete('/:id', auth.isAuthenticated(), controller.remove);
 
 export default router;

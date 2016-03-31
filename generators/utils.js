@@ -38,9 +38,11 @@ function normalizeGit(rawUrl) {
  * @return {String}
  */
 function pascalCase(input) {
-  return _.map(input.split(/[^a-öA-Ö0-9]/), function (subStr) {
-    return subStr[0].toUpperCase() + subStr.slice(1);
-  }).join('');
+  return !input
+    ? ''
+    : _.map(input.split(/[^a-öA-Ö0-9]/), function (subStr) {
+      return subStr[0].toUpperCase() + subStr.slice(1);
+    }).join('');
 }
 
 /**
@@ -51,7 +53,9 @@ function pascalCase(input) {
  */
 function camelCase(input) {
   var pascal = pascalCase(input);
-  return pascal[0].toLowerCase() + pascal.slice(1);
+  return !input
+    ? ''
+    : pascal[0].toLowerCase() + pascal.slice(1);
 }
 
 /**
@@ -86,8 +90,9 @@ function literalRegExp(text, flags) {
  * @param {Object} yo - yo instance, from generators.(Named)Base.extend used as *this*
  * @param {String} content - text to inject
  * @param {String} destination - filepath, defaults to yo.destinationPath('server/api/routes.js')
+ * @param {RegExp} regex The regex to match
  */
-function injectText(_this, content, destination) {
+function injectText(_this, content, destination, regex) {
   var fileContents;
 
   destination = destination
@@ -109,7 +114,9 @@ function injectText(_this, content, destination) {
   }
 
   // Create regex to match between */// Start injection ///* and */// Stop injection ///*
-  var regex = /(\/\/\/\sStart\sinjection\s\/\/\/)([\s\S]*)(?=\/\/\/\sStop\sinjection\s\/\/\/)/i;
+  var _regex = !!regex
+    ? regex
+    : /(\/\/\/\sStart\sinjection\s\/\/\/)([\s\S]*)(?=\/\/\/\sStop\sinjection\s\/\/\/)/i;
 
   // '$1' is the injection start, '$2' is all content after between injection start and stop
   var replace = ['$1$2', content, '\n  '].join('');
@@ -120,7 +127,21 @@ function injectText(_this, content, destination) {
   }
 
   // Update the file.
-  fs.writeFileSync(destination, fileContents.replace(regex, replace));
+  fs.writeFileSync(destination, fileContents.replace(_regex, replace));
+}
+
+/**
+ * @param {String} start Literal start string to match
+ * @param {String} stop Literal stop string to match
+ * @param {String} flags The regex flags
+ * @return {RegExp}
+ */
+function injectRegex(start, stop, flags) {
+  return new RegExp([
+    '({start})'.replace('{start}', escapeRegex(start)),
+    '([\\s\\S]*)',
+    '(?={stop})'.replace('{stop}', escapeRegex(stop)),
+  ].join(''), flags);
 }
 
 /**
@@ -155,16 +176,17 @@ function assignDeep(_base, _path, _value) {
  * or 'server/api/customer/index.js'
  *
  * @param {String} basePath
- * @param {String} routeName
- * @param {String} fileName
+ * @param {String} typeName
+ * @param {String} filename
  * @param {Boolean} skipName
  * @return {String} -> path-like string
  */
-function createPathName(basePath, routeName, fileName, skipName) {
-  return _.filter([
-    basePath,
-    _.filter([ (fileName === 'index.js' || skipName ? '' : routeName), fileName ]).join('.')
-  ]).join('/');
+function createPathName(basePath, typeName, filename, skipName) {
+  var _filename = /api\/services/i.test(basePath)
+    ? typeName
+    : _.filter([(filename === 'index.js' || skipName ? '' : typeName), filename]).join('.');
+
+  return _.filter([basePath, _filename]).join('/');
 };
 
 /**
@@ -174,16 +196,17 @@ function createPathName(basePath, routeName, fileName, skipName) {
  * fileName is assumed to be the last element of split *originalPath*.
  *
  * @param {Object} _this The yo object which often is used as this.[something]
+ * @param {String} basePath The bae path to go before _this.name
  * @param {String} originPath The path to the template file
  * @param {Object} options Template origin for the fs.copyTpl function
  */
-function copyTemplate(_this, originPath, options) {
+function copyTemplate(_this, basePath, originPath, options) {
   // Split the separate path segments into an array
   var _originPath = originPath.split('/')
   // Get the filename
   var _filename = _originPath.pop();
   // Create the new path
-  var _path = ['server/api', _this.name].concat(_originPath).join('/');
+  var _path = [basePath, _this.name].concat(_originPath).join('/');
   // Create the actual file path
   var _filepath = createPathName(_path, _this.name, _filename);
   // Copy the template
@@ -199,10 +222,11 @@ function copyTemplate(_this, originPath, options) {
  * and appends the name of the route to each file name.
  *
  * @param {Object} _this The yo object which often is used as this.[something]
+ * @param {String} basePath The path to where files should go.
  * @param {Object} options Template options for the fs.copyTpl function
- * @param {String} _subFolder Optional, the folder name of the folder below templates
+ * @param {String} subFolder Optional, the folder name of the folder below templates
  */
-function copyTemplateFiles(_this, options, subFolder) {
+function copyTemplateFiles(_this, basePath, options, subFolder) {
   // Get the template path
   var _templatePath = !!subFolder ? _this.templatePath(subFolder) : _this.templatePath();
   // Iterate over all files in the folder _templatePath
@@ -213,10 +237,10 @@ function copyTemplateFiles(_this, options, subFolder) {
     var _statObj = fs.statSync([_templatePath, pathName].join('/'));
     if (_statObj.isFile()) {
       // If it's a file, copy the template using the options
-      copyTemplate(_this, _subFolder, options);
+      copyTemplate(_this, basePath, _subFolder, options);
     } else if (_statObj.isDirectory()) {
       // Need to go deeper
-      return copyTemplateFiles(_this, options, _subFolder);
+      return copyTemplateFiles(_this, basePath, options, _subFolder);
     }
   });
 }
@@ -228,6 +252,7 @@ module.exports = {
   escapeRegex: escapeRegex,
   literalRegExp: literalRegExp,
   injectText: injectText,
+  injectRegex: injectRegex,
   assignDeep: assignDeep,
   copyTemplateFiles: copyTemplateFiles,
 }

@@ -20,13 +20,13 @@ export const index = (req, res) => {
 }
 
 /**
- * Route: GET '/api/users/:_id'
+ * Route: GET '/api/users/:id'
  */
 export const show = (req, res) => {
-  // Get the _id
-  let {_id} = req.params;
+  // Get the id
+  let {id} = req.params;
 
-  User.findById(_id)
+  User.findById(id)
   .then((user) => res.status(200).json(user))
   .catch((err) => utils.handleError(res, err));
 }
@@ -44,26 +44,26 @@ export const create = (req, res) => {
 }
 
 /**
- * Route: PUT '/api/users/:_id'
+ * Route: PUT '/api/users/:id'
  */
 export const update = (req, res) => {
-  // Get the _id and user
-  let {_id} = req.params;
+  // Get the id and user
+  let {id} = req.params;
   let _user = req.body;
 
-  User.update(_id, _user)
+  User.update(id, _user)
   .then((user) => res.status(200).json(user))
   .catch((err) => utils.handleError(res, err));
 }
 
 /**
- * Route: DELETE '/api/users/:_id'
+ * Route: DELETE '/api/users/:id'
  */
 export const remove = (req, res) => {
-  // Get the _id
-  let {_id} = req.params;
+  // Get the id
+  let {id} = req.params;
 
-  User.remove(_id)
+  User.remove(id)
   .then(() => res.status(201).send('No Content'))
   .catch((err) => utils.handleError(res, err));
 }

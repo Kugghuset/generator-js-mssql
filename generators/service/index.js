@@ -9,7 +9,7 @@ var fs = require('fs');
 var path = require('path');
 
 var utils = require('../utils');
-var prompt = require('./route.prompt');
+var prompt = require('./service.prompt');
 
 module.exports = generators.Base.extend({
   constructor: function () {
@@ -24,7 +24,7 @@ module.exports = generators.Base.extend({
   },
 
   initializing: function () {
-    this.log('Preparing to create new route.');
+    this.log('Preparing to create a new service.');
   },
 
   prompting: function () {
@@ -66,19 +66,18 @@ module.exports = generators.Base.extend({
     var _options = _.assign({}, this.answers, { name: this.name, nameCapitalized: nameCapitalized });
 
     // Copy the files
-    utils.copyTemplateFiles(this, 'server/api', _options);
+    utils.copyTemplateFiles(this, 'server/services', _options);
 
     // Update the routes.js file
     utils.injectText(
       this,
-      'app.use(\'/api/{name}s\', require(\'./api/{name}\').default);'.replace(/\{name\}/gi, this.name),
+      'app.use(\'/services/{name}\', require(\'./services/{name}\').default);'.replace(/\{name\}/gi, this.name),
       this.destinationPath('server/routes.js'),
-      utils.injectRegex('/// Start inject routes ///', '/// Stop inject routes ///', 'i')
+      utils.injectRegex('/// Start inject services ///', '/// Stop inject services ///', 'i')
     );
   },
 
-  end: function (params) {
+  end: function () {
 
   }
-
 });

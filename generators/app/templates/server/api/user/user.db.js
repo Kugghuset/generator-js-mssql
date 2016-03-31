@@ -6,7 +6,7 @@ import moment from 'moment';
 import Promise from 'bluebird';
 
 import utils from '../../utils/utils';
-import auth from '../../services/auth';
+import auth from '../../services/auth/auth.service';
 
 /**
  * Returns a params object for *user*.

@@ -75,7 +75,7 @@ module.exports = generators.Base.extend({
       this.fs.copyTpl(
         this.templatePath(filename),
         this.destinationPath(filename),
-        this.answers,
+        this.answers
       );
 
       // Create an .env file as well
@@ -84,7 +84,7 @@ module.exports = generators.Base.extend({
         this.fs.copyTpl(
           this.templatePath(filename),
           this.destinationPath('.env'),
-          this.answers,
+          this.answers
         );
       }
     }.bind(this));

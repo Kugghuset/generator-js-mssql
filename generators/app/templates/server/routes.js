@@ -17,9 +17,16 @@ export default (app, log) => {
   // Logging, should be below static stuff to only log API calls, and not assets
   app.use(morgan('combined', { stream: log }))
 
-  // Do not remove this,
-  // it's used for the Yo generator to find where to inject routes.
-  /// Start injection ///
+  /*****************************************************************
+   * Do not remove these,
+   * it's used for the Yo generator to find where to inject routes.
+   ****************************************************************/
+
+  /// Start inject routes ///
   app.use('/api/users', require('./api/user').default);
-  /// Stop injection ///
+  /// Stop inject routes ///
+
+  /// Start inject services ///
+  app.use('/services/auth', require('./services/auth').default);
+  /// Stop inject services ///
 }
