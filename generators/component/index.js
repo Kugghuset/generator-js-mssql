@@ -9,7 +9,7 @@ var fs = require('fs');
 var path = require('path');
 
 var utils = require('../utils');
-var prompt = require('./service.prompt');
+var prompt = require('./component.prompt');
 
 module.exports = generators.Base.extend({
   constructor: function () {
@@ -24,7 +24,7 @@ module.exports = generators.Base.extend({
   },
 
   initializing: function () {
-    this.log('Preparing to create a new service.');
+    this.log('Preparing to create a new Vue component.');
   },
 
   prompting: function () {
@@ -34,7 +34,7 @@ module.exports = generators.Base.extend({
 
     prompt(this)
     .then(function (_answers) {
-      this.name = utils.camelCase((_answers || {}).name);
+      this.name = _.kebabCase((_answers || {}).name);
 
       // Call the done callback
       done();
@@ -59,25 +59,39 @@ module.exports = generators.Base.extend({
         '\n'
       );
     }
-    // Get the name for capitalization
+
     var nameCapitalized = utils.pascalCase(this.name);
+    var nameDecapitalized = utils.camelCase(this.name);
 
     // Get the options to copy files with.
-    var _options = _.assign({}, this.answers, { name: this.name, nameCapitalized: nameCapitalized });
+    var _options = _.assign({}, this.answers, { name: this.name, nameDecapitalized: nameDecapitalized, nameCapitalized: nameCapitalized });
 
     // Copy the files
-    utils.copyTemplateFiles(this, 'server/services', _options);
+    utils.copyTemplateFiles(this, 'public/scripts/components', _options);
 
-    // Update the routes.js file
+    // Inject the import
     utils.injectText(
       this,
-      'app.use(\'/services/{name}\', require(\'./services/{name}\').default);'.replace(/\{name\}/gi, this.name),
-      this.destinationPath('server/routes.js'),
-      utils.injectRegex('/// Start inject services ///', '/// Stop inject services ///', 'i')
+      'import {nameCapitalized} from \'./{name}/{name}.component\';'
+        .replace(/\{nameCapitalized\}/g, _options.nameCapitalized)
+        .replace(/\{name\}/g, _options.name),
+      this.destinationPath('public/scripts/components/components.js'),
+      utils.injectRegex('/// Start inject imports ///', '/// Stop inject imports ///', 'i')
     );
+
+    // Inject the component
+    utils.injectText(
+      this,
+      '\'{name}\': {nameCapitalized},'
+        .replace(/\{nameCapitalized\}/g, _options.nameCapitalized)
+        .replace(/\{name\}/g, _options.name),
+      this.destinationPath('public/scripts/components/components.js'),
+      utils.injectRegex('/// Start inject components ///', '/// Stop inject components ///', 'i')
+    );
+
   },
 
   end: function () {
-    console.log('\nService created!\n');
+    console.log('\nComponent created!\n');
   }
 });

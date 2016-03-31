@@ -24,7 +24,7 @@ const stream = {
   /**
    * @param {String} message Message to write to stream
    */
-  write: (message) => logger.info(message)
+  write: (message) => { logger.info(message) }
 };
 
 // Attach the stream to logger.

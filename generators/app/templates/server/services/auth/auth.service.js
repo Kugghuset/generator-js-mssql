@@ -5,9 +5,9 @@ import compose from 'composable-middleware';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-// import User from '../api/user/user.db';
-import config from '../config';
-import utils from '../utils/utils';
+// import User from '../../api/user/user.db';
+import config from '../../config';
+import utils from '../../utils/utils';
 
 /**
  * Finds the token from either query params, headers or cookies

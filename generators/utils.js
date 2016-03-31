@@ -119,7 +119,7 @@ function injectText(_this, content, destination, regex) {
     : /(\/\/\/\sStart\sinjection\s\/\/\/)([\s\S]*)(?=\/\/\/\sStop\sinjection\s\/\/\/)/i;
 
   // '$1' is the injection start, '$2' is all content after between injection start and stop
-  var replace = ['$1$2', content, '\n  '].join('');
+  var replace = ['$1$2', content, '\n'].join('');
 
   if (literalRegExp(content, 'g').test(fileContents)) {
     // It's already there, no need to do anything.

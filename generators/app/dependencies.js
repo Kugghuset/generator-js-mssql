@@ -24,6 +24,9 @@ module.exports = {
     'morgan',
     'normalize.css',
     'milligram',
+    'vue',
+    'vue-resource',
+    'vue-router',
   ],
   dev: [
     'babel-core',
