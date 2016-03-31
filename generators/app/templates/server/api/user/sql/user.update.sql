@@ -10,6 +10,7 @@ SET
     [name] = @name
   , [email] = @email
   , [dateUpdated] = GETUTCDATE()
+WHERE [userId] = @userId
 
 -- Select it
 SELECT

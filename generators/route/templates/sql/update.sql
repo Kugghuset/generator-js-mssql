@@ -9,6 +9,7 @@ UPDATE [dbo].[<%= nameCapitalized %>]
 SET
     [description] = @description
   , [dateUpdated] = GETUTCDATE()
+WHERE [<%= name %>Id] = @<%= name %>Id
 
 -- Select it
 SELECT
