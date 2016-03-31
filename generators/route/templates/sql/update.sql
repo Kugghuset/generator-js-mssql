@@ -8,7 +8,7 @@ Note: the password is not updated this way.
 UPDATE [dbo].[<%= nameCapitalized %>]
 SET
     [description] = @description
-  , [dateUpdated] = @GETUTCDATE()
+  , [dateUpdated] = GETUTCDATE()
 
 -- Select it
 SELECT

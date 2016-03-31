@@ -9,7 +9,7 @@ UPDATE [dbo].[User]
 SET
     [name] = @name
   , [email] = @email
-  , [dateUpdated] = @GETUTCDATE()
+  , [dateUpdated] = GETUTCDATE()
 
 -- Select it
 SELECT
