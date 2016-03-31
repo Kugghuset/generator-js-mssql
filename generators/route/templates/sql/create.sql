@@ -16,5 +16,6 @@ SELECT TOP 1
   , [description]
   , [dateCreated]
   , [dateUpdated]
+  , [isDisabled]
 FROM [dbo].[<%= nameCapitalized %>]
 ORDER BY [<%= name %>Id] DESC

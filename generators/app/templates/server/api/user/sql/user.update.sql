@@ -19,5 +19,6 @@ SELECT
   , [email]
   , [dateCreated]
   , [dateUpdated]
+  , [isDisabled]
 FROM [dbo].[User]
 WHERE [userId] = @userId

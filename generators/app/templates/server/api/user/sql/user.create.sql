@@ -21,5 +21,6 @@ SELECT TOP 1
   , [email]
   , [dateCreated]
   , [dateUpdated]
+  , [isDisabled]
 FROM [dbo].[User]
 ORDER BY [userId] DESC

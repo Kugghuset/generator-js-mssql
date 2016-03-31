@@ -17,5 +17,6 @@ SELECT
   , [description]
   , [dateCreated]
   , [dateUpdated]
+  , [isDisabled]
 FROM [dbo].[<%= nameCapitalized %>]
 WHERE [<%= name %>Id] = @<%= name %>Id
