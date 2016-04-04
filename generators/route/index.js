@@ -71,7 +71,7 @@ module.exports = generators.Base.extend({
     // Update the routes.js file
     utils.injectText(
       this,
-      'app.use(\'/api/{name}s\', require(\'./api/{name}\').default);'.replace(/\{name\}/gi, this.name),
+      'app.use(\'/api/{kebabName}s\', require(\'./api/{name}\').default);'.replace(/\{kebabName\}/gi, _.kebabCase(this.name)).replace(/\{name\}/gi, this.name),
       this.destinationPath('server/routes.js'),
       utils.injectRegex('/// Start inject routes ///', '/// Stop inject routes ///', 'i')
     );
