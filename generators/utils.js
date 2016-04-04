@@ -113,21 +113,28 @@ function injectText(_this, content, destination, regex) {
     return;
   }
 
+  // Check if the injection already exists
+  if (literalRegExp(content, 'g').test(fileContents)) {
+    // It's already there, no need to do anything.
+    return;
+  }
+
   // Create regex to match between */// Start injection ///* and */// Stop injection ///*
   var _regex = !!regex
     ? regex
     : /(\/\/\/\sStart\sinjection\s\/\/\/)([\s\S]*)(?=\/\/\/\sStop\sinjection\s\/\/\/)/i;
 
   // '$1' is the injection start, '$2' is all content after between injection start and stop
-  var replace = ['$1$2', content, '\n'].join('');
+  var _replace = ['$1$2', content, '\n'].join('');
 
-  if (literalRegExp(content, 'g').test(fileContents)) {
-    // It's already there, no need to do anything.
-    return;
-  }
+  // Get that small space before the match for consistent intendation.
+  var _contentRegex = new RegExp(['(.*)', escapeRegex(content)].join(''));
+  var _preContentSpace = (fileContents.replace(_regex, _replace).match(_contentRegex) || [])[1] || '';
+
+  _replace = ['$1$2', content, '\n', _preContentSpace].join('');
 
   // Update the file.
-  fs.writeFileSync(destination, fileContents.replace(_regex, replace));
+  fs.writeFileSync(destination, fileContents.replace(_regex, _replace));
 }
 
 /**
