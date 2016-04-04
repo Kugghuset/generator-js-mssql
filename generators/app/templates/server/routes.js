@@ -15,7 +15,7 @@ export default (app, log) => {
   app.use(express.static(root + '/public'));
 
   // Logging, should be below static stuff to only log API calls, and not assets
-  app.use(morgan('combined', { stream: log }))
+  app.use(morgan('combined', { stream: log.stream }))
 
   /*****************************************************************
    * Do not remove these,
