@@ -1,7 +1,7 @@
 'use strict'
 
 import express from 'express';
-import service from './auth.service';
+import auth from './auth.service';
 
 const router = express.Router();
 
