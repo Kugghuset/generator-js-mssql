@@ -1,7 +1,5 @@
 /*
 Updates a <%= name %> to db and selects it.
-
-Note: the password is not updated this way.
 */
 
 -- Update the <%= name %>
