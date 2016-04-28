@@ -4,9 +4,12 @@ import _ from 'lodash';
 import DataObjectParser from 'dataobject-parser';
 import sql from 'seriate';
 import mssql from 'mssql';
+import path from 'path';
 
 import _http from './utils.http';
 import _logger from './utils.logger';
+
+import config from '../config';
 
 export const http = _http;
 export const logger = _logger;
@@ -282,6 +285,81 @@ export const dropTable = (tableName, database) => new Promise ((resolve, reject)
   .catch(reject);
 });
 
+/**
+ * @param {Array} collection The items to create many of
+ * @param {String} tableName Name of the table to insert *collection* into
+ * @param {String} dirname The __dirname variable for setting the root for files
+ * @param {String} baseName Base of name for the sql files
+ * @param {String} mainId Name of the main id column in the table. Defaults to *baseName* + 'Id'
+ * @param {Array} skipNames Array of column names to skip in creating the table. Identity columns will be skipped. Defaults to ['isDisabled', 'dateUpdated', 'dateCreated']
+ * @return {Promise} -> {Array}
+ */
+export const createManySQL = (collection, tableName, dirname, baseName, mainId, skipNames = ['isDisabled', 'dateUpdated', 'dateCreated']) => new Promise((resolve, reject) => {
+  // Ensure mainId is defined
+  if (!mainId) { mainId = `${baseName}Id`; }
+
+  // Create the temp table
+  let _table = new mssql.Table(tableName);
+
+  // Get the column definitions for the table, execpt for the IDS
+  let _columns = parseSQLCreateTable(sql.fromFile(path.resolve(dirname, `./sql/${baseName}.initialize.sql`)), skipNames);
+
+  // Set table creation to true, to ensure the table is created if it doesn't exist,
+  // which it shouldn't do
+  _table.create = true;
+
+  // Add all columns to the table
+  _.forEach(_columns, (col, i) => {
+    _table.columns.add(col.name, col.type, _.omit(col, ['name', 'type']));
+  });
+
+  // Add all rows
+  _.forEach(collection, (item) => {
+    // Get all parameters from the telList in the order of the column names
+    let _data = _.map(_columns, (col) => item[col.name]);
+
+    // Add the row
+    _table.rows.add(..._data);
+  });
+
+  // Create a request instace and make the bulk operation
+  new mssql.Connection(config.db).connect()
+  .then((connection) => {
+    // Get the current request
+    let _request = new mssql.Request(connection);
+
+    return _request.bulk(_table);
+  })
+  .then((rowCount) => {
+
+    // Query the DB and return the latest inserts
+    return sql.execute({
+      query: sql.fromFile(path.resolve(dirname, `./sql/${baseName}.find.sql`))
+        .replace('SELECT', `SELECT TOP ${rowCount}`)
+        + `ORDER BY [${mainId}] DESC`
+    });
+  })
+  // Objectify, reverse and resolve the data
+  .then((telList) => resolve(objectify(telList).reverse()))
+  .catch(reject);
+});
+
+/**
+ * Returns the first *propName* from *collection*.
+ *
+ * @param {ArrayLike} collection The collection to get from
+ * @param {String} propName The name of the property to get the first of
+ * @param {String} orders The way to order, defaults to 'asc'
+ * @return {Any}
+ */
+export const headBy = (collection, propName, orders = 'asc') => {
+  return _.chain(collection)
+    .orderBy(propName, orders)
+    .thru(_.head)
+    .get(propName)
+    .value();
+}
+
 export default {
   http: http,
   logger: logger,
@@ -296,4 +374,6 @@ export default {
   guid: guid,
   parseSQLCreateTable: parseSQLCreateTable,
   dropTable: dropTable,
+  createManySQL: createManySQL,
+  headBy: headBy,
 }

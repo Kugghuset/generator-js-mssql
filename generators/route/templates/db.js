@@ -160,54 +160,7 @@ export const remove = (<%= name %>Id) => new Promise((resolve, reject) => {
  * @param {Array} <%= name %>s Array of <%= name %>s to insert into the DB
  * @return {Promise} -> {Array} Array of the recently inserted <%= name %>s
  */
-export const createMany = (<%= name %>s) => new Promise((resolve, reject) => {
-  // Create a name for the temp table as a GUID
-  let _tableName = '<%= nameCapitalized %>';
-
-  // Create the temp table
-  let _table = new mssql.Table(_tableName);
-
-  // Get the column definitions for the table, execpt for the IDS
-  let _columns = utils.parseSQLCreateTable(sql.fromFile('./sql/<%= name %>.initialize.sql'), ['isDisabled', 'dateUpdated', 'dateCreated']);
-
-  // Set table creation to true, to ensure the table is created if it doesn't exist,
-  // which it shouldn't do
-  _table.create = true;
-
-  // Add all columns to the table
-  _.forEach(_columns, (col, i) => {
-    _table.columns.add(col.name, col.type, _.omit(col, ['name', 'type']));
-  });
-
-  // Add all rows
-  _.forEach(<%= name %>s, (<%= name %>) => {
-    // Get all parameters from the <%= name %> in the order of the column names
-    let _data = _.map(_columns, (col) => <%= name %>[col.name]);
-
-    // Add all rows
-    _table.rows.add(..._data);
-  });
-
-  // Create a request instace and make the bulk operation
-  new mssql.Connection(config.db).connect()
-  .then((connection) => {
-    // Get the current request
-    let _request = new mssql.Request(connection);
-
-    return _request.bulk(_table);
-  })
-  .then((rowCount) => {
-    // Query the DB and return the latest inserts
-    return sql.execute({
-      query: sql.fromFile('./sql/<%= name %>.find.sql')
-        .replace('SELECT', `SELECT TOP ${rowCount}`)
-        + 'ORDER BY [<%= name %>Id] DESC'
-    });
-  })
-  // Objectify, reverse and resolve the data
-  .then((<%= name %>s) => resolve(utils.objectify(<%= name %>s).reverse()))
-  .catch(reject);
-});
+export const createMany = (<%= name %>s) => utils.createManySQL(<%= name %>s, '<%= nameCapitalized %>', __dirname, '<%= name %>');
 
 export default {
   initialize: initialize,
