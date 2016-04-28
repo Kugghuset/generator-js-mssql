@@ -97,7 +97,7 @@ export const _get = (url, data, options = {}, assumeJson = true) => {
  * @param {Boolean} assumeJson Defaults to true
  * @return {Promise} -> {Any}
  */
-export const _put = (url, data, options = {}, assumeJson = true) => _request('put', data, options, assumeJson);
+export const _put = (url, data, options = {}, assumeJson = true) => _request('put', url, data, options, assumeJson);
 
 /**
  * Makes a POST request to the provided *url* with the body of *contents*
@@ -109,7 +109,7 @@ export const _put = (url, data, options = {}, assumeJson = true) => _request('pu
  * @param {Boolean} assumeJson Defaults to true
  * @return {Promise} -> {Any}
  */
-export const _post = (url, data, options = {}, assumeJson = true) => _request('post', data, options, assumeJson);
+export const _post = (url, data, options = {}, assumeJson = true) => _request('post', url, data, options, assumeJson);
 
 /**
  * Makes a DELETE request to the provided *url*
