@@ -82,9 +82,9 @@ module.exports = generators.Base.extend({
     // Inject the component
     utils.injectText(
       this,
-      '\'{name}\': {nameCapitalized},'
+      '\'{nameDecapitalized}\': {nameCapitalized},'
         .replace(/\{nameCapitalized\}/g, _options.nameCapitalized)
-        .replace(/\{name\}/g, _options.name),
+        .replace(/\{nameDecapitalized\}/g, _options.nameDecapitalized),
       this.destinationPath('public/scripts/components/components.js'),
       utils.injectRegex('/// Start inject components ///', '/// Stop inject components ///', 'i')
     );
