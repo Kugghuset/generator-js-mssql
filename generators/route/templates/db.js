@@ -130,7 +130,7 @@ export const update = (<%= name %>Id, <%= name %>) => new Promise((resolve, reje
     query: sql.fromFile('./sql/<%= name %>.update.sql'),
     params: _params,
   })
-  .then((<%= name %>s) => utils.objectify(<%= name %>s[0]))
+  .then((<%= name %>s) => resolve(utils.objectify(<%= name %>s[0])))
   .catch(reject)
 });
 
