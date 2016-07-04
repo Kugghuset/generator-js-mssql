@@ -2,6 +2,8 @@
 Creates a user to db and selects it.
 */
 
+DECLARE @id BigInt
+
 -- Insert the user
 INSERT INTO [dbo].[User] (
     [name]
@@ -14,8 +16,10 @@ VALUES (
   , @password
 )
 
+SELECT @id = SCOPE_IDENTITY()
+
 -- Select it
-SELECT TOP 1
+SELECT
     [userId]
   , [name]
   , [email]
@@ -23,4 +27,4 @@ SELECT TOP 1
   , [dateUpdated]
   , [isDisabled]
 FROM [dbo].[User]
-ORDER BY [userId] DESC
+  WHERE [userId] = @id
