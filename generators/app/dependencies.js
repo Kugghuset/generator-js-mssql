@@ -17,6 +17,7 @@ module.exports = {
     'jsonwebtoken',
     'bcryptjs',
     'moment',
+    'mssql',
     'node-env-file',
     'jquery',
     'dataobject-parser',

@@ -10,4 +10,7 @@ const <%= nameCapitalized %>Component = Vue.extend({
   }
 });
 
+// Register component
+Vue.component('<%= name %>', <%= nameCapitalized %>Component);
+
 export default <%= nameCapitalized %>Component;
